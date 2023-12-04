@@ -144,4 +144,4 @@ int main() {
     
     cout << MinSol << endl;
     return 0;
-}9
+}
