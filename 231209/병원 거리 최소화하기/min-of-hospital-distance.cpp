@@ -1,28 +1,9 @@
-// *문제
-// n*n크기의 사람과 병원의 위치가 주어짐 병원거리는 가장 가까운 거리
-// 거리는 |x2-x1| + |y2-y1|로 각 좌표의 차이의 절대값
-// m개의 병원만 남겨둘때 병원거리의 총합이 최소
-
-// *입력
-// 1) n과 m이 공백을 사이에 두고 입력 
-// 2~n~50, 1~m~13, m~병원의수~13, 사람의수~2*n 
-// 2~n+1) 빈칸인 경우 0, 사람인경우 1, 병원인 경우 2를 공백을 사이에 두고 입력
-// m개의 병원을 고르는게 불가능한 입력은 주어지지 않음
-
-//*출력
-// m개를 남겼을때 각 사람들의 병원거리 총 합 중 최솟값 
-// (사람은 제일 가까운 병원에 간다.)
-//
-
-// 알고리즘 ( 예제를 풀며 성립)
-// 
-// 
 #include <iostream>
 #include <vector>
 #include <limits>
 #include <queue>
 #define NUM_MAX 50
-#define DEBUG 1
+#define DEBUG 0
 using namespace std;
 
 int n;
@@ -88,6 +69,11 @@ void CalDistance(){
 
     if(DEBUG){
         printf("MinDistance : %d, DistanceSum : %d\n",MinDistance, DistanceSum);
+        if (MinDistance > DistanceSum)
+        {
+            printf("Change!!!!!\n");
+        }
+        
         if (DistanceSum == 6)
         {
             printf("here~\n");
@@ -98,7 +84,7 @@ void CalDistance(){
 }
 
 // 병원까지의 거리를 구하는 함수
-void SelectHosipital(){
+void SelectHosipital(int index){
     if (UnChosenHospital.size() + m == NumHospitals)
     {
         if (DEBUG)
@@ -125,14 +111,15 @@ void SelectHosipital(){
     } 
 
 
-    for (const auto& hospital : Hospitals)
-    {        
-        UnChosenHospital.push_back(hospital);
-        arr[hospital.first][hospital.second] = 0;
+    for (int i = index; i < Hospitals.size(); i++) // 똑같은 녀석이 들어간다. index로 구분필요
+    {            
 
-        SelectHosipital();
+        UnChosenHospital.push_back(make_pair(Hospitals[i].first,Hospitals[i].second));
+        arr[Hospitals[i].first][Hospitals[i].second] = 0;
 
-        arr[hospital.first][hospital.second] = 2;
+        SelectHosipital(i + 1);
+
+        arr[Hospitals[i].first][Hospitals[i].second] = 2;
         UnChosenHospital.pop_back();    
     }    
     return; 
@@ -172,7 +159,7 @@ int main(){
         cout << endl;
     }
 
-    SelectHosipital();
+    SelectHosipital(0);
     cout << MinDistance;    
 
 }
