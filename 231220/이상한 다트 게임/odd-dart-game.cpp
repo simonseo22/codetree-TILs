@@ -41,11 +41,10 @@ void normalize(){
             if (Dart[i][j] > avg)
             {
                 Dart[i][j] -= 1;
-            } else if (Dart[i][j] < avg)
+            } else if (Dart[i][j] < avg && Dart[i][j] != 0) 
             {
                  Dart[i][j] += 1;
-            }// 같은수는 변형 X         
-            
+            }// 같은수는 변형 X                    
         }
         
     }
@@ -84,13 +83,18 @@ bool erase(){
             {
                 int nx = i + dx[dir];
                 int ny = (j + dy[dir]) % m;
-                if (Dart[nx][ny] == Dart[i][j])
+                if (Dart[nx][ny] == Dart[i][j] && Dart[i][j] != 0)
                 {
                     isThisErase = true;
                     Next_Dart[nx][ny] = 0;
                     Next_Dart[i][j] = 0;
                     if (!isErase)
                     {
+                        if (DEBUG)
+                        {
+                            printf("isErase!! at (%d, %d)\n",i,j);
+                        }
+                        
                         isErase = true;
                     }
                 }
@@ -118,10 +122,12 @@ bool erase(){
         {
             for (int j = 0; j < m; j++)
             {
-                printf("%d ",Next_Dart[i][j]);
+                printf("%d ",Dart[i][j]);
             }
             printf("\n");            
         }        
+
+        cout << "isErase : " << isErase << endl;
     }   
 
     return isErase;
@@ -144,6 +150,11 @@ void simulate(){
         dir = 1;
     }else{
         dir = -1;
+    }
+
+    if (DEBUG)
+    {
+        //printf("x : %d, d : %d-> dir : %d, k : %d\n",x,d,dir,k);
     }
     
     while (multiple_of_x < n)
@@ -203,6 +214,7 @@ int main() {
     while (q--) // 중간에 숫자가 모두 없어지면 0
     {
         cin >> x >> d >> k;
+        
         // 문제는 순서로 주어지므로 배열의 인자로 사용하기 위해 보정 -> 배수를 사용하기에 이러면 안돼 
         // d : 0(시계), 1(반시계)
         simulate();        
