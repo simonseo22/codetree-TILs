@@ -27,6 +27,7 @@
 //*출력
 // k초이후 남아있는 원자들의 질량합
 
+// 배열에서 나머지를 이용하여 값을 보정할때 그 값이 변하는 값일경우 보정을 하면 안된다.
 #include <iostream>
 #include <vector>
 #include <tuple>
@@ -216,7 +217,7 @@ int main(){
     {        
         int x,y,m,s,d;
         cin >> x >> y >> m >> s >>d;
-        s = s % n; // 크기 0~n으로 보정
+        // s = s % n; // 크기 0~n-1으로 보정을 하면안된다. 
         Atoms[x-1][y-1].push_back(make_tuple(m,s,d));
     }
 
