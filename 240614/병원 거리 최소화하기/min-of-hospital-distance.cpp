@@ -1,154 +1,106 @@
 #include <iostream>
 #include <vector>
-#include <limits>
+#include <algorithm>
 #include <queue>
-#define NUM_MAX 50
-#define DEBUG 0
+#include <climits>
+
 using namespace std;
 
-int n;
-int m;
-int NumHospitals;
-int arr[NUM_MAX][NUM_MAX];
-int MinDistance = numeric_limits<int>::max();
-int dx[] = {-1,0,1,0};
-int dy[] = {0,1,0,-1};
+#define MAX_N 50
+#define MAX_HOSPITAL 13 // 
 
-vector<pair<int,int>> Hospitals;
-vector<pair<int,int>> UnChosenHospital;
-vector<pair<int,int>> Patients;
+int n, m;
+int min_distance = INT_MAX;
+vector<pair<int, int> > people;
+vector<pair<int, int> > hospitals;
+bool visited[MAX_HOSPITAL]; // 병원의 선택여부를 기록
 
-// m개의 병원만 선택하여
+bool checked[MAX_N][MAX_N]; // bfs시 방문 여부를 체크하기 위한 배열입니다.
+int step[MAX_N][MAX_N]; // bfs시 병원까지의 거리를 기록
 
-// *따로따로 찾는것이 아니라 한번에 넣고 찾아야 한다.
-
-void CalDistance(){
-    //BFS를 이용해 제일 가까운 병원 탐색
-    // 병원이 빠지는게 좋다 사람을 하나또 만들거야? 비효율적이야
-    int DistanceSum = 0;
-    queue<pair<int,int>> q;
-
-    for (const auto& Patient : Patients)
-    {        
-        q.push(make_pair(Patient.first,Patient.second));
-    }
-
-    while (!q.empty())
-    {
-        const auto &Position = q.front();
-        int i = Position.first;
-        int j = Position.second;
-
-
-        for (int d = 0; d < 4; d++)
-        {
-            int di = i + dx[d];
-            int dj = j + dy[d];
-            if (-1 < di && di < n && -1 < dj && dj < n)
-            {
-                if (DEBUG)
-                {
-                    printf("push (%d,%d)\n", di, dj);
-                }
-                q.push(make_pair(di, dj));
-            }
-        }
-    }
-       
-
-    if(DEBUG){
-        printf("MinDistance : %d, DistanceSum : %d\n",MinDistance, DistanceSum);
-        if (MinDistance > DistanceSum)
-        {
-            printf("Change!!!!!\n");
-        }
-        
-        if (DistanceSum == 6)
-        {
-            printf("here~\n");
-        }        
-    }
-
-    MinDistance = MinDistance > DistanceSum ? DistanceSum : MinDistance;
+bool CanGo(int x, int y) { // bfs시 나아가려는 위치가 격자 내에 아직 방문하지 않은 지점인지를 판단합니다.
+	return 0 <= x && x < n && 0 <= y && y < n && checked[x][y] == false;
 }
 
-// 병원까지의 거리를 구하는 함수
-void SelectHosipital(int index){
-    if (UnChosenHospital.size() + m == NumHospitals)
-    {
-        if (DEBUG)
-        {
-            printf("UnChosenHospital : %d\n",UnChosenHospital.size());
-            for (int i = 0; i < UnChosenHospital.size(); i++)
-            {
-                printf("%dst (%d, %d)\n", i,UnChosenHospital[i].first,UnChosenHospital[i].second);
-            }
+int GetCurrMinDistance() { // 각 사람이 병원까지의 최소거리를 구할때 병원위치에서 BFS를 한번에 진행해 거리를 구한다.
+	int curr_min_distance = 0;
 
-            printf("arr!!\n");
-            for (int i = 0; i < n; i++)
-            {
-                cout << endl;
-                for (int j = 0; j < n; j++)
-                {
-                    cout << arr[i][j] << " ";
-                }
-            }
-            cout << endl;
-        }
-        CalDistance();     
-        return; 
-    } 
+	queue<pair<int, int>> q;
+	memset(checked, false, sizeof(bool) * n * n);
+	memset(step, 0, sizeof(int) * n * n);
 
+	for (int i = 0; i < (int)hospitals.size(); i++)
+	{
+		if (visited[i])
+		{
+			int x = hospitals[i].first, y = hospitals[i].second;
+			checked[x][y] = true;
+			step[x][y] = 0;
+			q.push(make_pair(x, y));
+		}
+	}
 
-    for (int i = index; i < Hospitals.size(); i++) // 똑같은 녀석이 들어간다. index로 구분필요
-    {            
+	int dx[4] = { 1, -1, 0, 0 };
+	int dy[4] = { 0, 0, 1, -1 };
 
-        UnChosenHospital.push_back(make_pair(Hospitals[i].first,Hospitals[i].second));
-        arr[Hospitals[i].first][Hospitals[i].second] = 0;
+	while (!q.empty())
+	{
+		pair<int, int> curr_pos = q.front();
+		int x = curr_pos.first, y = curr_pos.second;
+		q.pop();
+		for (int i = 0; i < 4; i++)
+		{
+			int nx = x + dx[i], ny = y + dy[i];
+			if (CanGo(nx,ny))
+			{
+				checked[nx][ny] = true;
+				step[nx][ny] = step[x][y] + 1;
+				q.push(make_pair(nx, ny));
+			}
+		}
+;	}
 
-        SelectHosipital(i + 1);
-
-        arr[Hospitals[i].first][Hospitals[i].second] = 2;
-        UnChosenHospital.pop_back();    
-    }    
-    return; 
+	for (int i = 0; i < people.size(); i++)
+	{
+		int x = people[i].first, y = people[i].second;
+		curr_min_distance += step[x][y];
+	}
+	return curr_min_distance;
 }
 
-int main(){
+void SearchMinDistance(int cnt, int last_idx) {
+	if (cnt == m)
+	{
+		min_distance = min(min_distance, GetCurrMinDistance());
+		return;
+	}
 
-    cin >> n >> m;
-    for (int i = 0; i < n; i++)
-    {
-        for (int j = 0; j < n; j++)
-        {            
-            cin >> arr[i][j];
-            if (arr[i][j] == 2)
-            {
-                NumHospitals++;
-                Hospitals.push_back(make_pair(i,j));
-            } else if (arr[i][j] == 1)
-            {
-                Patients.push_back(make_pair(i,j));
-            }
-               
-        }        
-    }
+	for (int i = last_idx+1; i < hospitals.size(); i++){ // 개수 탐색
+		visited[i] = true;
+		SearchMinDistance(cnt + 1, i);
+		visited[i] = false;
+	}
+}
 
-    if (DEBUG)
-    {
-        printf("input arr\n");
-        for (int i = 0; i < n; i++)
-        {
-            cout << endl;
-            for (int j = 0; j < n; j++)
-            {
-                cout << arr[i][j] << " ";
-            }
-        }
-        cout << endl;
-    }
+int main() {
+	cin >> n >> m;
 
-    SelectHosipital(0);
-    cout << MinDistance;    
+	int buffer;
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < n; j++)
+		{
+			cin >> buffer;
+			if (buffer == 1){
+				people.push_back(make_pair(i, j)); // m~13, m개의 병원을 골라야함
+			}
+			else if (buffer == 2) {
+				hospitals.push_back(make_pair(i, j));
+			}
+		}
+	}
+	SearchMinDistance(0, -1);
+	cout << min_distance;
 
+	return 0;
 }
