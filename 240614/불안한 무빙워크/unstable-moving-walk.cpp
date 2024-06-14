@@ -11,7 +11,7 @@
 #include <vector>
 #include <queue>
 
-#define DEBUG 1
+#define DEBUG 0
 #define N_MAX 100 
 
 using namespace std;
