@@ -26,8 +26,15 @@ int GetCurrMinDistance() { // 각 사람이 병원까지의 최소거리를 구�
 	int curr_min_distance = 0;
 
 	queue<pair<int, int>> q;
-	memset(checked, false, sizeof(bool) * n * n);
-	memset(step, 0, sizeof(int) * n * n);
+	//memset(checked, false, sizeof(bool) * n * n);
+	//memset(step, 0, sizeof(int) * n * n);
+
+	for (int i = 0; i < n; i++)
+		for (int j = 0; j < n; j++) {
+			checked[i][j] = false;
+			step[i][j] = 0;
+		}
+
 
 	for (int i = 0; i < (int)hospitals.size(); i++)
 	{
