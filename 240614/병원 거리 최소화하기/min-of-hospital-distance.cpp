@@ -20,52 +20,41 @@ vector<pair<int,int>> Patients;
 
 // m개의 병원만 선택하여
 
+// *따로따로 찾는것이 아니라 한번에 넣고 찾아야 한다.
+
 void CalDistance(){
     //BFS를 이용해 제일 가까운 병원 탐색
     // 병원이 빠지는게 좋다 사람을 하나또 만들거야? 비효율적이야
     int DistanceSum = 0;
+    queue<pair<int,int>> q;
+
     for (const auto& Patient : Patients)
-    {
-        queue<pair<int,int>> q;
+    {        
         q.push(make_pair(Patient.first,Patient.second));
-        if(DEBUG){
-            printf("patient(%d,%d) search!\n",Patient.first,Patient.second);
-        }
-        while (!q.empty())
+    }
+
+    while (!q.empty())
+    {
+        const auto &Position = q.front();
+        int i = Position.first;
+        int j = Position.second;
+
+
+        for (int d = 0; d < 4; d++)
         {
-            const auto& Position = q.front();
-            int i = Position.first;
-            int j = Position.second;
-            q.pop();
-            // 4방향중 가능한 방향을 q에 push
-            if (arr[i][j] == 2)
+            int di = i + dx[d];
+            int dj = j + dy[d];
+            if (-1 < di && di < n && -1 < dj && dj < n)
             {
-                int temp = abs(Patient.first-i) + abs(Patient.second - j);
                 if (DEBUG)
                 {
-                    printf("patient(%d,%d) go Hospital(%d,%d) dist %d\n",Patient.first,Patient.second,i,j,temp);                    
+                    printf("push (%d,%d)\n", di, dj);
                 }
-                DistanceSum += temp;
-                break;                
+                q.push(make_pair(di, dj));
             }
-            for (int d = 0; d < 4; d++)
-            {
-                int di = i + dx[d];
-                int dj = j + dy[d];
-                if (-1 < di && di < n && -1 < dj && dj < n)
-                {
-                    if (DEBUG)
-                    {
-                        printf("push (%d,%d)\n",di,dj);
-                    }                    
-                    q.push(make_pair(di,dj));
-                }
-                
-            }
-            
-
-        }        
-    }   
+        }
+    }
+       
 
     if(DEBUG){
         printf("MinDistance : %d, DistanceSum : %d\n",MinDistance, DistanceSum);
