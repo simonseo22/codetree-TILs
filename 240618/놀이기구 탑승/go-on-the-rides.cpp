@@ -26,7 +26,7 @@
 using namespace std;
 
 int n;
-int LovingFriends[N_MAX][5]; // [순서][본인, 좋아하는1~4]
+int LovingFriends[N_MAX*N_MAX][5]; // [순서][본인, 좋아하는1~4]
 int arr[N_MAX][N_MAX];
 vector<pair<int, int>> candidates;
 int dx[] = { 1,0,-1,0 };
@@ -47,7 +47,8 @@ bool nearFriend(int friends_i, int x, int y) {
 			}
 		}
 	}
-	return false;}
+	return false;
+}
 
 // rule1에 의해 index가 갈수있는 자리를 candiates에 추가
 void rule1(int index) {
