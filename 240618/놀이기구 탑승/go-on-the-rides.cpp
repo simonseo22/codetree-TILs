@@ -26,7 +26,7 @@
 using namespace std;
 
 int n;
-int LovingFrineds[N_MAX][5]; // [순서][본인, 좋아하는1~4]
+int LovingFriends[N_MAX][5]; // [순서][본인, 좋아하는1~4]
 int arr[N_MAX][N_MAX];
 vector<pair<int, int>> candidates;
 int dx[] = { 1,0,-1,0 };
@@ -37,33 +37,26 @@ bool inRange(int x, int y) {
 	return 0 <= x && x < n && 0 <= y && y < n;
 }
 
-bool nearFriend(int frinds_i, int x, int y) {
-	int index = 0;
-	for (int i = 0; i < n*n; i++)
-	{
-		if (LovingFrineds[i][0] == frinds_i)
-		{
-			index = i;
+bool nearFriend(int friends_i, int x, int y) {
+	for (int i = 0; i < n * n; i++) {
+		if (LovingFriends[i][0] == friends_i) {
+			for (int j = 1; j <= 4; j++) {
+				if (LovingFriends[i][j] == arr[x][y]) {
+					return true;
+				}
+			}
 		}
 	}
-	for (int i = 1; i < 5; i++)
-	{
-		if (LovingFrineds[index][i] == arr[x][y])
-		{
-			return true;
-		}
-	}
-	return false;
-}
+	return false;}
 
 // rule1에 의해 index가 갈수있는 자리를 candiates에 추가
 void rule1(int index) {
 #if DEBUG
-	printf("%d rule1\n", LovingFrineds[index][0]);
+	printf("%d rule1\n", LovingFriends[index][0]);
 	printf("friend!\n");
 	for (int i = 1; i < 5; i++)
 	{
-		cout << LovingFrineds[index][i] << " ";
+		cout << LovingFriends[index][i] << " ";
 	}
 	cout << endl;
 #endif // DEBUG
@@ -82,7 +75,7 @@ void rule1(int index) {
 			{
 				int nx = x + dx[d];
 				int ny = y + dy[d];
-				if (inRange(nx,ny) && nearFriend(LovingFrineds[index][0], nx,ny))
+				if (inRange(nx,ny) && nearFriend(LovingFriends[index][0], nx,ny))
 				{
 					numFriend++;
 				}
@@ -171,7 +164,7 @@ int main() {
 	{
 		for (int j = 0; j < 5; j++)
 		{					
-			cin >> LovingFrineds[i][j];
+			cin >> LovingFriends[i][j];
 		}
 	}
 #if DEBUG
@@ -180,7 +173,7 @@ int main() {
 	{
 		for (int j = 0; j < 5; j++)
 		{
-			cout << LovingFrineds[i][j] << " ";
+			cout << LovingFriends[i][j] << " ";
 		}
 		cout << endl;
 	}
@@ -195,26 +188,26 @@ int main() {
 		{
 			int x, y;
 			tie(x,y) = candidates[0];
-			arr[x][y] = LovingFrineds[i][0]; // 위치 설정
+			arr[x][y] = LovingFriends[i][0]; // 위치 설정
 			candidates.clear();
 		}
 		else // rule2진행
 		{
 #if DEBUG
-			printf("%d rule1 candiate : %d\n",LovingFrineds[i][0],candidates.size());
+			printf("%d rule1 candiate : %d\n",LovingFriends[i][0],candidates.size());
 #endif // DEBUG
 			rule2(i);
 			if (candidates.size()==1)
 			{
 				int x, y;
 				tie(x, y) = candidates[0];
-				arr[x][y] = LovingFrineds[i][0]; // 위치 설정
+				arr[x][y] = LovingFriends[i][0]; // 위치 설정
 				candidates.clear();
 			}
 			else
 			{
 #if DEBUG
-			printf("%d rule2 candiate : %d\n", LovingFrineds[i][0], candidates.size());
+			printf("%d rule2 candiate : %d\n", LovingFriends[i][0], candidates.size());
 #endif // DEBUG
 				pair<int, int>pos = make_pair(N_MAX,N_MAX);
 				for (int i = 0; i < candidates.size(); i++)
@@ -225,12 +218,12 @@ int main() {
 						pos = currentPos;
 					}
 				}
-				arr[pos.first][pos.second] = LovingFrineds[i][0];
+				arr[pos.first][pos.second] = LovingFriends[i][0];
 				candidates.clear();
 			}
 		}
 #if DEBUG
-		printf("%d SET\n",LovingFrineds[i][0]);
+		printf("%d SET\n",LovingFriends[i][0]);
 		for (int x = 0; x < n; x++)
 		{
 			for (int y = 0; y < n; y++)
