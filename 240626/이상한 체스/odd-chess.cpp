@@ -43,10 +43,12 @@ void TokenGo(int T_i) {
 			continue;
 		}
 
+		int Tokendx = dx[d_i] * TokenMove[type][Td][d_i];
+		int Tokendy = dy[d_i] * TokenMove[type][Td][d_i];
 		while (1)
 		{		
-			int nx = x + dx[d_i] * TokenMove[type][Td][d_i];
-			int ny = y + dy[d_i] * TokenMove[type][Td][d_i];
+			int nx = x + Tokendx;
+			int ny = y + Tokendy;
 			if (CanGo(nx, ny))
 			{
 				arr[nx][ny] = type; // 지sk감을 표시,
@@ -169,9 +171,7 @@ int main() {
 				
 		}
 	}
-
 #if DEBUG
-
 	printf("init\n");
 	for (int i = 0; i < n; i++)
 	{
@@ -183,7 +183,6 @@ int main() {
 	}
 	printf("=========================================\n");
 #endif // DEBUG
-
 	simulate(0);
 	cout << minA;
 }
